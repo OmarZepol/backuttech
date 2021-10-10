@@ -2,9 +2,9 @@ const { pool } = require("../database/config");
 const bcrypt = require("bcryptjs");
 const { generateJWT } = require("../helpers/jwt");
 
-const registro = async (req, res) => {
+const registro = async(req, res) => {
     try {
-        pool.query('SELECT * FROM users WHERE email = ?', [req.body.email], async (err, rows) => {
+        pool.query('SELECT * FROM users WHERE email = ?', [req.body.email], async(err, rows) => {
             if (rows.length > 0) {
                 res.json({ text: "Usuario ya registrado" });
             } else {
@@ -21,7 +21,7 @@ const registro = async (req, res) => {
                     data: req.body
                 });
             }
-    });
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -31,42 +31,42 @@ const registro = async (req, res) => {
     }
 };
 
-const login = async (req, res) => {
+const login = async(req, res) => {
     try {
         const email = req.body.email;
         const token = await generateJWT(email);
-        pool.query('SELECT * FROM users WHERE email = ?', [req.body.email],async (err, rows) => {
+        pool.query('SELECT * FROM users WHERE email = ?', [req.body.email], async(err, rows) => {
             if (rows.length > 0) {
                 bcrypt.compare(
-                req.body.password,
-                rows[0].password,
-                function (err, ress){
-                    if (err) {
-                        res.json({ ok: false, text: '' +  err });
-                    }
-                    if (ress) {
+                    req.body.password,
+                    rows[0].password,
+                    function(err, ress) {
+                        if (err) {
+                            res.json({ ok: false, text: '' + err });
+                        }
+                        if (ress) {
                             res.json({
-                            ok: true,
-                            text: 'Login correcto',
-                            email: email,
-                            token,
-                            data: rows[0]
-                        });
-                    } else {
-                        res.json({
-                        ok: false,
-                        text: 'Correo o contraseña incorrecta'
-                        });
-                    }
-                });
+                                ok: true,
+                                text: 'Login correcto',
+                                email: email,
+                                token,
+                                data: rows[0]
+                            });
+                        } else {
+                            res.json({
+                                ok: false,
+                                text: 'Correo o contraseña incorrecta'
+                            });
+                        }
+                    });
             } else {
-                res.json({ 
-                    ok: false, 
+                res.json({
+                    ok: false,
                     text: 'Correo o contraseña incorrecta'
                 });
             }
         });
-    }catch (error) {
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
             ok: false,
@@ -75,7 +75,7 @@ const login = async (req, res) => {
     }
 }
 
-const renuevaToken = async (req, res) => {
+const renuevaToken = async(req, res) => {
     const email = req.body.email;
     const token = await generateJWT(email);
     return res.json({
@@ -86,8 +86,27 @@ const renuevaToken = async (req, res) => {
     });
 };
 
+//agregar colicitd
+const addSolicitud = async(req, res) => {
+    try {
+        pool.query("INSERT INTO solicitud set ?", [req.body]);
+        res.json({
+            ok: true,
+            text: 'Registro correcto',
+            data: req.body
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            Text: 'Algo salió mal',
+        });
+    }
+};
+
 module.exports = {
     renuevaToken,
     registro,
     login,
+    addSolicitud
 };
