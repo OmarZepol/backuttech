@@ -17,6 +17,6 @@ app.listen(process.env.DB_PORT, () => {
 });
 
 // Rutas
-app.use('/innov', require('./routes/auth'));
-app.use("/innov", require("./routes/users"));
-app.use("/innov", require("./routes/solicitud"));
+app.use('/uttech', require('./routes/auth'));
+app.use("/uttech", require("./routes/users"));
+app.use("/uttech", require("./routes/solicitud"));
